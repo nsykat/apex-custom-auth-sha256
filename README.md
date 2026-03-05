@@ -1,5 +1,7 @@
 # 🔐 Building a Custom Authentication Scheme in Oracle APEX with Salted SHA‑256
 
+Each user has a unique salt for stronger password security.
+
 Authentication is the backbone of any secure application. While Oracle APEX provides built‑in schemes, sometimes you need full control over how users are validated.  
 This project demonstrates how to create a **custom authentication scheme** in Oracle APEX using **salted SHA‑256 hashing** for secure password storage and validation.
 
