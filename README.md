@@ -33,9 +33,10 @@ This project demonstrates how to create a **custom authentication scheme** in Or
 ---
 
 ## 📸 Screenshots
-- Login page with custom authentication scheme.  
-- SQL Workshop showing salted SHA‑256 hash values.  
-- Password change drawer page.  
+- Login page with custom authentication scheme.
+ ![Login Page](screenshots/login_page.png)
+- Password change drawer page.
+![Password Change Drawer](screenshots/change_password.png)
 
 *(Screenshots with timestamps are included in the `/screenshots` folder.)*
 
