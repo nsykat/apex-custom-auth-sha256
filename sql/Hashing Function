@@ -1,0 +1,14 @@
+CREATE OR REPLACE FUNCTION hash_password (
+    p_user_name IN VARCHAR2,
+    p_password  IN VARCHAR2,
+    p_salt      IN VARCHAR2
+) RETURN VARCHAR2 IS
+    v_hash VARCHAR2(200);
+BEGIN
+    SELECT STANDARD_HASH(p_password || p_salt || p_user_name, 'SHA256')
+    INTO v_hash
+    FROM dual;
+
+    RETURN v_hash;
+END hash_password;
+/
