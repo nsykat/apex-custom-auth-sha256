@@ -6,3 +6,59 @@ CREATE TABLE users (
     password    VARCHAR2(200),
     is_active   NUMBER(1) DEFAULT 1
 );
+
+CREATE SEQUENCE  "USERS_SEQ"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 15 NOCACHE  NOORDER  NOCYCLE  NOKEEP  NOSCALE  GLOBAL ;
+
+create or replace TRIGGER users_bi
+BEFORE INSERT ON users
+FOR EACH ROW
+DECLARE
+    v_salt VARCHAR2(20);
+BEGIN
+    -- Generate primary key if not provided
+    IF :NEW.user_id IS NULL THEN
+        SELECT users_seq.NEXTVAL INTO :NEW.user_id FROM dual;
+    END IF;
+
+    -- Force username to uppercase
+    :NEW.user_name := UPPER(:NEW.user_name);
+
+    -- Generate random salt if not provided
+    IF :NEW.user_salt IS NULL THEN
+        v_salt := DBMS_RANDOM.STRING('x', 20);
+        :NEW.user_salt := v_salt;
+    END IF;
+
+    -- Ensure is_active defaults to 1
+    IF :NEW.is_active IS NULL THEN
+        :NEW.is_active := 1;
+    END IF;
+
+    -- Hash password securely with SHA-256 and salt
+    :NEW.password := hash_password(:NEW.user_name, :NEW.password, :NEW.user_salt);
+END;
+/
+    
+
+create or replace TRIGGER bu_users
+BEFORE UPDATE ON users
+FOR EACH ROW
+BEGIN
+    -- Always keep username uppercase
+    :NEW.user_name := UPPER(:NEW.user_name);
+
+    -- Only re-hash if the password value is different from the old one
+    IF :NEW.password IS NOT NULL AND :NEW.password != :OLD.password THEN
+        :NEW.password := hash_password(:NEW.user_name, :NEW.password, :NEW.user_salt);
+    ELSE
+        :NEW.password := :OLD.password;
+    END IF;
+
+    -- Preserve salt unless explicitly changed
+    IF :NEW.user_salt IS NULL THEN
+        :NEW.user_salt := :OLD.user_salt;
+    END IF;
+END;
+/
+
+
